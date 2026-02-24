@@ -21,7 +21,7 @@
         "Java 8": "ghcr.io\/pterodactyl\/yolks:java_8"
     },
     "file_denylist": [],
-    "startup": "java -Xms128M -XX:MaxRAMPercentage=95.0 -Dterminal.jline=false -Dterminal.ansi=true -jar {{SERVER_JARFILE}}",
+    "startup": "java -Xms128M $(if [[ \"{{DOCKER_RAM}}\" == \"1\" ]]; then if [[ {{DOCKER_RAMX}} -ge 128 && {{DOCKER_RAMX}} -le {{SERVER_MEMORY}} ]]; then echo \"-Xmx{{DOCKER_RAMX}}M\"; else echo \"-Xmx{{SERVER_MEMORY}}M\"; fi; fi) $(if [[ \"{{JVM_STATUS}}\" == \"1\" ]]; then echo \"{{JVM_ARGS}}\"; fi) -jar {{SERVER_JARFILE}} --nogui",
     "config": {
         "files": "{\r\n    \"server.properties\": {\r\n        \"parser\": \"properties\",\r\n        \"find\": {\r\n            \"server-ip\": \"0.0.0.0\",\r\n            \"server-port\": \"{{server.build.default.port}}\",\r\n            \"query.port\": \"{{server.build.default.port}}\"\r\n        }\r\n    }\r\n}",
         "startup": "{\r\n    \"done\": \")! For help, type \"\r\n}",
@@ -58,10 +58,10 @@
         },
         {
             "name": "Download Path",
-            "description": "A URL to use to download a server.jar rather than the ones in the install script. This is not user viewable.",
+            "description": "A URL to use to download a server.jar rather than the ones in the install script.",
             "env_variable": "DL_PATH",
             "default_value": "",
-            "user_viewable": false,
+            "user_viewable": true,
             "user_editable": false,
             "rules": "nullable|string",
             "field_type": "text"
@@ -74,6 +74,46 @@
             "user_viewable": true,
             "user_editable": true,
             "rules": "required|string|max:20",
+            "field_type": "text"
+        },
+        {
+            "name": "Custom Memory",
+            "description": "Memory Maximum Of Servers In MB",
+            "env_variable": "DOCKER_RAMX",
+            "default_value": "2048",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|integer",
+            "field_type": "text"
+        },
+        {
+            "name": "Custom Memory Enabled",
+            "description": "Contact the Server Administrator To Enable This Feature!",
+            "env_variable": "DOCKER_RAM",
+            "default_value": "1",
+            "user_viewable": true,
+            "user_editable": false,
+            "rules": "required|boolean",
+            "field_type": "text"
+        },
+        {
+            "name": "Custom JVM Arguments",
+            "description": "Custom Java Runtime Arguments for Minecraft Server Startup | Default value: -Xms128M -XX:MaxRAMPercentage=95.0 -Dterminal.jline=true -Duser.timezone=Asia\/Jakarta -Dterminal.ansi=true",
+            "env_variable": "JVM_ARGS",
+            "default_value": "-DGeyser.RakSendCookie=false -Dterminal.jline=false -Dterminal.ansi=true -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=40 -XX:G1HeapRegionSize=8M -XX:G1ReservePercent=20 -XX:G1HeapWastePercent=5 -XX:G1MixedGCCountTarget=4 -XX:InitiatingHeapOccupancyPercent=15 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=https:\/\/mcflags.emc.gs -Daikars.new.flags=true",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "field_type": "text"
+        },
+        {
+            "name": "Custom JVM Enabled",
+            "description": "Contact the Server Administrator To Enable This Feature!",
+            "env_variable": "JVM_STATUS",
+            "default_value": "1",
+            "user_viewable": true,
+            "user_editable": false,
+            "rules": "required|boolean",
             "field_type": "text"
         }
     ]
