@@ -4,21 +4,24 @@
         "version": "PTDL_v2",
         "update_url": "https://raw.githubusercontent.com/pelican-eggs/minecraft/refs/heads/main/java/spongevanilla/egg-pterodactyl-sponge-vanilla.json"
     },
-    "exported_at": "2025-12-31T12:59:35+00:00",
+    "exported_at": "2026-06-24T15:40:27+07:00",
     "name": "Sponge",
     "author": "panel@example.com",
     "description": "A community-driven open source Minecraft: Java Edition modding platform.",
     "features": [
         "eula",
         "java_version",
-        "pid_limit"
+        "pid_limit",
+        "votifier",
+        "mc_configs",
+        "mc_jars"
     ],
     "docker_images": {
-        "Java 21": "ghcr.io\/pelican-eggs\/yolks:java_21",
-        "Java 17": "ghcr.io\/pelican-eggs\/yolks:java_17",
-        "Java 16": "ghcr.io\/pelican-eggs\/yolks:java_16",
-        "Java 11": "ghcr.io\/pelican-eggs\/yolks:java_11",
-        "Java 8": "ghcr.io\/pelican-eggs\/yolks:java_8"
+        "Java 21": "ghcr.io/pelican-eggs/yolks:java_21",
+        "Java 17": "ghcr.io/pelican-eggs/yolks:java_17",
+        "Java 16": "ghcr.io/pelican-eggs/yolks:java_16",
+        "Java 11": "ghcr.io/pelican-eggs/yolks:java_11",
+        "Java 8": "ghcr.io/pelican-eggs/yolks:java_8"
     },
     "file_denylist": [],
     "startup": "java -Xms128M -XX:MaxRAMPercentage=95.0 -jar {{SERVER_JARFILE}}",
@@ -30,14 +33,14 @@
     },
     "scripts": {
         "installation": {
-            "container": "ghcr.io\/pelican-eggs\/installers:debian",
-            "entrypoint": "bash",
-            "script": "#!/bin/bash\r\n# spongeVanilla Installation Script\r\n#\r\n# Server Files: /mnt/server\r\napt update\r\napt install -y jq curl\r\n\r\nmkdir -p /mnt/server\r\ncd /mnt/server\r\n\r\n#Adding .jar when not eding by SERVER_JARFILE\r\nif [[ ! ${SERVER_JARFILE} = *\\.jar ]]; then\r\n  SERVER_JARFILE=\"${SERVER_JARFILE}.jar\"\r\nfi\r\n\r\n## check spongevanilla version and default to recommended if it's invalid\r\nif [ -z ${SV_VERSION} ] || [ \"$(curl -s https://dl-api.spongepowered.org/v1/org.spongepowered/spongevanilla/downloads/${SV_VERSION})\" == \"Unknown version\" ]; then\r\n    echo -e \"defaulting to recommended\"\r\n    SV_VERSION=\"recommended\"\r\nfi\r\n\r\n## handle getting download linsk for sponge\r\nif [ \"${SV_VERSION}\" == \"recommended\" ]; then\r\n    echo -e \"using recommended spongevanilla version\"\r\n    SV_VERSION=$(curl -s https://dl-api.spongepowered.org/v1/org.spongepowered/spongevanilla/downloads/recommended | jq -r '.version')\r\n    echo -e \"found spongevanilla Version ${SV_VERSION}\"\r\n    SV_DL_LINK=$(curl -s https://dl-api.spongepowered.org/v1/org.spongepowered/spongevanilla/downloads/recommended | jq -r '.artifacts.\"\".url')\r\nelif [ \"${SV_VERSION}\" == \"latest\" ]; then\r\n    echo -e \"using latest SpongForge version\"\r\n    SV_VERSION=$(curl -s https://dl-api.spongepowered.org/v1/org.spongepowered/spongevanilla | jq -r '.buildTypes.stable.latest.version')\r\n    echo -e \"found spongevanilla Version ${SV_VERSION}\"\r\nelse\r\n    echo -e \"found spongevanilla Version ${SV_VERSION}\"\r\n    SV_DL_LINK=$(curl -s https://dl-api.spongepowered.org/v1/org.spongepowered/spongevanilla/downloads/${SV_VERSION} | jq -r '.artifacts.\"\".url')\r\nfi\r\n\r\nif [ -f ${SERVER_JARFILE} ] \u0026\u0026 [ $(sha1sum server.jar | awk '{ print $1 }') == $(curl -s https://dl-api.spongepowered.org/v1/org.spongepowered/spongevanilla/downloads/recommended | jq -r '.artifacts.\"\".sha1') ]; then\r\n    echo -e \"Already have the correct spongevanilla version\"\r\nelse\r\n    echo -e \"Downloading spongevanilla version ${SV_VERSION}\"\r\n    echo -e \"running: curl -s ${SV_DL_LINK} -o /mnt/server/mods/spongevanilla-${SV_VERSION}.jar\"\r\n    curl -s ${SV_DL_LINK} -o /mnt/server/${SERVER_JARFILE}\r\nfi\r\n\r\nif [ ! -f server.properties ]; then\r\n    echo -e \"Downloading MC server.properties\"\r\n    curl -s -o server.properties https://raw.githubusercontent.com/parkervcp/eggs/master/game_eggs/minecraft/java/server.properties\r\nfi\r\n\r\necho -e \"Install for spongevanilla is complete\""
+            "script": "#!/bin/bash\r\n# spongeVanilla Installation Script\r\n#\r\n# Server Files: /mnt/server\r\napt update\r\napt install -y jq curl\r\n\r\nmkdir -p /mnt/server\r\ncd /mnt/server\r\n\r\n#Adding .jar when not eding by SERVER_JARFILE\r\nif [[ ! ${SERVER_JARFILE} = *\\.jar ]]; then\r\n  SERVER_JARFILE=\"${SERVER_JARFILE}.jar\"\r\nfi\r\n\r\n## check spongevanilla version and default to recommended if it's invalid\r\nif [ -z ${SV_VERSION} ] || [ \"$(curl -s https://dl-api.spongepowered.org/v1/org.spongepowered/spongevanilla/downloads/${SV_VERSION})\" == \"Unknown version\" ]; then\r\n    echo -e \"defaulting to recommended\"\r\n    SV_VERSION=\"recommended\"\r\nfi\r\n\r\n## handle getting download linsk for sponge\r\nif [ \"${SV_VERSION}\" == \"recommended\" ]; then\r\n    echo -e \"using recommended spongevanilla version\"\r\n    SV_VERSION=$(curl -s https://dl-api.spongepowered.org/v1/org.spongepowered/spongevanilla/downloads/recommended | jq -r '.version')\r\n    echo -e \"found spongevanilla Version ${SV_VERSION}\"\r\n    SV_DL_LINK=$(curl -s https://dl-api.spongepowered.org/v1/org.spongepowered/spongevanilla/downloads/recommended | jq -r '.artifacts.\"\".url')\r\nelif [ \"${SV_VERSION}\" == \"latest\" ]; then\r\n    echo -e \"using latest SpongForge version\"\r\n    SV_VERSION=$(curl -s https://dl-api.spongepowered.org/v1/org.spongepowered/spongevanilla | jq -r '.buildTypes.stable.latest.version')\r\n    echo -e \"found spongevanilla Version ${SV_VERSION}\"\r\nelse\r\n    echo -e \"found spongevanilla Version ${SV_VERSION}\"\r\n    SV_DL_LINK=$(curl -s https://dl-api.spongepowered.org/v1/org.spongepowered/spongevanilla/downloads/${SV_VERSION} | jq -r '.artifacts.\"\".url')\r\nfi\r\n\r\nif [ -f ${SERVER_JARFILE} ] && [ $(sha1sum server.jar | awk '{ print $1 }') == $(curl -s https://dl-api.spongepowered.org/v1/org.spongepowered/spongevanilla/downloads/recommended | jq -r '.artifacts.\"\".sha1') ]; then\r\n    echo -e \"Already have the correct spongevanilla version\"\r\nelse\r\n    echo -e \"Downloading spongevanilla version ${SV_VERSION}\"\r\n    echo -e \"running: curl -s ${SV_DL_LINK} -o /mnt/server/mods/spongevanilla-${SV_VERSION}.jar\"\r\n    curl -s ${SV_DL_LINK} -o /mnt/server/${SERVER_JARFILE}\r\nfi\r\n\r\nif [ ! -f server.properties ]; then\r\n    echo -e \"Downloading MC server.properties\"\r\n    curl -s -o server.properties https://raw.githubusercontent.com/parkervcp/eggs/master/game_eggs/minecraft/java/server.properties\r\nfi\r\n\r\necho -e \"Install for spongevanilla is complete\"",
+            "container": "ghcr.io/pelican-eggs/installers:debian",
+            "entrypoint": "bash"
         }
     },
     "variables": [
         {
-            "name": "Forge\/Neoforge Version",
+            "name": "Forge/Neoforge Version",
             "description": "The modding api target version if set to `spongeforge` or `spongeneo`. Leave blank if using\n`spongevanilla`",
             "env_variable": "FORGE_VERSION",
             "default_value": "",
@@ -63,7 +66,7 @@
             "default_value": "server.jar",
             "user_viewable": true,
             "user_editable": true,
-            "rules": "required|regex:\/^([\\w\\d._-]+)(\\.jar)$\/",
+            "rules": "required|regex:/^([\\w\\d._-]+)(\\.jar)$/",
             "field_type": "text"
         },
         {
