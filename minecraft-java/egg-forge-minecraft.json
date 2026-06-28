@@ -6,7 +6,7 @@
     },
     "exported_at": "2026-06-24T15:40:27+07:00",
     "name": "Forge Minecraft",
-    "author": "panel@example.com",
+    "author": "support@pterodactyl.io",
     "description": "Minecraft Forge Server. Minecraft Forge is a modding API (Application Programming Interface), which\nmakes it easier to create mods, and also make sure mods are compatible with each other.",
     "features": [
         "eula",

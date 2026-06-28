@@ -6,7 +6,7 @@
     },
     "exported_at": "2026-06-24T15:40:27+07:00",
     "name": "Bungeecord",
-    "author": "panel@example.com",
+    "author": "support@pterodactyl.io",
     "description": "For a long time, Minecraft server owners have had a dream that encompasses a free, easy, and\nreliable way to connect multiple Minecraft servers together. BungeeCord is the answer to said dream.\nWhether you are a small server wishing to string multiple game-modes together, or the owner of the\nShotBow Network, BungeeCord is the ideal solution for you. With the help of BungeeCord, you will be\nable to unlock your community's full potential.",
     "features": [
         "eula",
